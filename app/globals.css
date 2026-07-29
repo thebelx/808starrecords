@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: #090909;
+  --color-foreground: #ffffff;
+  --color-surface: #111111;
+  --color-surface-elevated: #181818;
+  --color-accent: #d90429;
+  --color-accent-hover: #f21b3f;
+  --color-muted: #a8a8a8;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-card: #111111;
+  --color-card-foreground: #ffffff;
+  --color-primary: #d90429;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #181818;
+  --color-secondary-foreground: #a8a8a8;
+  --color-destructive: #d90429;
+  --color-ring: #d90429;
+  --color-input: rgba(255, 255, 255, 0.08);
+  --color-popover: #181818;
+  --color-popover-foreground: #ffffff;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --shadow-premium: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-premium-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+  }
+
+  .font-body {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+
+  .text-secondary {
+    color: #a8a8a8;
+  }
+
+  .bg-surface {
+    background-color: #111111;
+  }
+
+  .bg-surface-elevated {
+    background-color: #181818;
+  }
+
+  .border-subtle {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .shadow-premium {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .hero-bg-animate {
+    animation: heroPan 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroPan {
+    0% {
+      transform: scale(1.05) translate(0, 0);
+    }
+    100% {
+      transform: scale(1.1) translate(-1%, -1%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bg-animate {
+      animation: none;
+    }
+  }
+
+  .scroll-snap-container {
+    scroll-snap-type: y proximity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-snap-container {
+      scroll-snap-type: none;
+    }
+  }
+
+  .scroll-snap-section {
+    scroll-snap-align: start;
+  }
+
+  .masonry-columns {
+    columns: 1;
+    column-gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .masonry-columns {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .masonry-columns {
+      columns: 3;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .masonry-columns {
+      columns: 4;
+    }
+  }
+
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}
