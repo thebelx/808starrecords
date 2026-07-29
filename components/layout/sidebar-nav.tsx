@@ -15,7 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NAV_SECTIONS } from "@/data";
 import { scrollToSection, useScrollSpy } from "@/hooks/use-scroll-spy";
 import { cn } from "@/lib/utils";
@@ -34,13 +34,32 @@ const ICONS: Record<string, React.ElementType> = {
   members: Users,
 };
 
-export function SidebarNav() {
+interface SidebarNavProps {
+  children: React.ReactNode;
+}
+
+export function SidebarNav({ children }: SidebarNavProps) {
   const sectionIds = NAV_SECTIONS.map((s) => s.id);
   const activeId = useScrollSpy(sectionIds);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsDesktop(window.innerWidth >= 1024);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const navContent = (
-    <nav aria-label="Section navigation" className="flex flex-col gap-1">
+    <motion.nav
+      aria-label="Section navigation"
+      className="flex flex-col gap-1"
+      initial={false}
+      animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+      transition={{ duration: 0.2 }}
+    >
       {NAV_SECTIONS.map((section) => {
         const Icon = ICONS[section.id] ?? Home;
         const isActive = activeId === section.id;
@@ -60,32 +79,69 @@ export function SidebarNav() {
             aria-current={isActive ? "true" : undefined}
           >
             <Icon className="h-4 w-4 shrink-0" />
-            <span className="hidden lg:inline">{section.label}</span>
+            <span className="hidden whitespace-nowrap lg:inline">
+              {section.label}
+            </span>
           </button>
         );
       })}
-    </nav>
+    </motion.nav>
   );
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-16 flex-col border-r border-subtle bg-background/95 backdrop-blur-none lg:flex lg:w-56 xl:w-60">
-        <div className="flex h-16 items-center px-4 lg:px-6">
-          <span className="font-display text-lg font-bold tracking-tight text-accent">
-            808
-          </span>
-          <span className="hidden font-display text-lg font-bold tracking-tight lg:inline">
-            STAR
-          </span>
-        </div>
-        <div className="flex-1 overflow-y-auto px-3 py-4">{navContent}</div>
-        <div className="border-t border-subtle px-4 py-3">
-          <kbd className="hidden rounded border border-subtle bg-surface-elevated px-2 py-0.5 text-xs text-secondary lg:inline">
-            ⌘K
-          </kbd>
-        </div>
-      </aside>
+      <div
+        className="fixed left-0 top-0 z-40 hidden h-screen lg:flex"
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+      >
+        <div className="h-full w-3 shrink-0" />
+        <motion.aside
+          initial={false}
+          animate={{ width: isExpanded ? 224 : 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 24 }}
+          className="relative flex h-full flex-col overflow-hidden border-r border-subtle bg-background/95 backdrop-blur-md"
+        >
+          <div className="flex h-16 items-center px-4 lg:px-6">
+            <span className="font-display text-lg font-bold tracking-tight text-accent">
+              808
+            </span>
+            <motion.span
+              initial={false}
+              animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+              transition={{ duration: 0.2 }}
+              className="ml-1 hidden font-display text-lg font-bold tracking-tight lg:inline"
+            >
+              STAR
+            </motion.span>
+          </div>
+          <motion.div
+            initial={false}
+            animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+            transition={{ duration: 0.2 }}
+            className="flex-1 overflow-y-auto px-3 py-4"
+          >
+            {navContent}
+          </motion.div>
+          <motion.div
+            initial={false}
+            animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+            transition={{ duration: 0.2 }}
+            className="border-t border-subtle px-4 py-3"
+          >
+            <kbd className="hidden rounded border border-subtle bg-surface-elevated px-2 py-0.5 text-xs text-secondary lg:inline">
+              ⌘K
+            </kbd>
+          </motion.div>
+        </motion.aside>
+      </div>
+
+      <div
+        className="w-full transition-[padding-left] duration-300 ease-out"
+        style={{ paddingLeft: isDesktop && isExpanded ? 224 : 0 }}
+      >
+        {children}
+      </div>
 
       {/* Mobile bottom bar */}
       <div className="fixed bottom-16 left-0 right-0 z-40 border-t border-subtle bg-background/95 lg:hidden">
